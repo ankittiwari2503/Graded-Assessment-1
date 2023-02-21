@@ -1,0 +1,44 @@
+apt install apache2 -y
+
+
+dpkg --get-selections apache2 | awk '{print $1}'
+
+
+Ankit-httpd-logs-$(date '+%m%d%Y-%H%M%S')
+
+tar -zcf *.log "Ankit-httpd-logs-$(date '+%m%d%Y-%H%M%S').tar"
+
+=====================================================================
+
+#Automation Script Task 2
+name="Ankit"
+
+sudo apt update -y
+apt upgrade -y
+
+if [[ $(dpkg --get-selections apache2 | awk '{print $1}') != apache2 ]]
+then
+        apt install apache2 -y
+fi
+
+run=$(systemctl status apache2 | grep running | awk -F " " '{print $3}'| tr -d '()')
+echo $run
+if [[ $(run) -ne "running" ]]
+then
+        systemctl start apache2
+fi
+systemctl start apache2
+
+systemctl status apache2
+
+status=$(systemctl is-enabled apache2 | grep "enabled")
+if [[ ${status} -ne "enabled" ]]
+then
+        systemctl enable apache2
+fi
+systemctl is-enabled apache2
+timestamp=$(date '+%d%m%Y-%H%M%S')
+cd /var/log/apache2
+tar -cf ${name}-httpd-logs-${timestamp}.tar *.log
+
+
